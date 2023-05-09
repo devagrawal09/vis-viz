@@ -235,7 +235,6 @@ export default function WithMoveValidation() {
           <>
             <Chessboard
               id="humanVsHuman"
-              width={320}
               position={position}
               onDrop={onDrop}
               onMouseOverSquare={onMouseOverSquare}
@@ -243,7 +242,7 @@ export default function WithMoveValidation() {
               boardStyle={{
                 borderRadius: "5px",
                 boxShadow: `0 5px 15px rgba(0, 0, 0, 0.5)`,
-                backgroundColor: "rgba(181, 136, 99, 0.5)",
+                backgroundColor: "black",
               }}
               squareStyles={squareStyles}
               dropSquareStyle={dropSquareStyle}
@@ -260,7 +259,7 @@ export default function WithMoveValidation() {
                       style={{
                         position: "absolute",
                         marginTop: "-0.3em",
-                        marginLeft: "1.6em",
+                        marginLeft: "3em",
                         fontSize: "1em",
                         zIndex: 100,
                         color:
@@ -269,7 +268,15 @@ export default function WithMoveValidation() {
                             : cell.vision < 0
                             ? "rgb(255,150,150)"
                             : "black",
-                        // textDecoration: "wavy",
+                        // neon effect using text-shadow
+                        // textShadow:
+                        //   cell.vision > 0
+                        //     ? "0 0 5px rgb(150,255,150), 0 0 10px rgb(150,255,150), 0 0 20px rgb(150,255,150), 0 0 40px rgb(150,255,150)"
+                        //     : cell.vision < 0
+                        //     ? "0 0 5px rgb(255,150,150), 0 0 10px rgb(255,150,150), 0 0 20px rgb(255,150,150), 0 0 40px rgb(255,150,150)"
+                        //     : "",
+                        textShadow:
+                          "0 0 5px black, 0 0 10px black, 0 0 20px black",
                       }}
                     >
                       {Math.abs(cell.vision)}
@@ -306,49 +313,31 @@ const squareStyling = ({
   const highlightedSquareStyles = highlights.reduce<SqSt>((acc, row) => {
     row.reduce((acc, cell) => {
       acc[cell.square] = {
-        // padding: "4px",
-        // for positive vision, add green with intensity based on vision, for negative vision, add red with intensity based on vision
         // backgroundColor:
         //   cell.vision > 0
-        //     ? `rgba(0, 255, 0, ${cell.vision / 6})`
-        //     : `rgba(255, 0, 0, ${Math.abs(cell.vision) / 6})`,
-
-        // backgroundImage: gradientify(
-        //   cell.vision > 0
-        //     ? `rgba(0, 255, 0, ${cell.vision / 6})`
-        //     : `rgba(255, 0, 0, ${Math.abs(cell.vision) / 6})`
-        // ),
-        // backgroundSize: "10%",
-
-        // add multiple shadows for each vision number, green for positive, red for negative, alternate with white to make it look like a gradient, inset shadow to make it look like a border
+        //     ? `rgba(0, 255, 0, 0.2)`
+        //     : cell.vision < 0
+        //     ? `rgba(255, 0, 0, 0.2)`
+        //     : ``,
 
         boxShadow: Array.from({ length: Math.abs(cell.vision) }, (_, i) => {
           const color =
-            cell.vision > 0 ? `rgba(0, 255, 0, 0.3)` : `rgba(255, 0, 0, 0.3)`;
+            cell.vision > 0 ? `rgba(5, 255, 5, 0.3)` : `rgba(255, 5, 5, 0.3)`;
 
-          return `inset 0px 0px ${i ? 0 : `20px`} ${
-            4 * i + 1
-          }px ${color}, inset 0px 0px 5px ${4 * i + 3}px rgba(0,0,0,0.3)`;
+          return `inset 0px 0px ${i ? 0 : `2px`} ${
+            6 * i + 4
+          }px ${color}, inset 0px 0px 5px ${6 * i + 1}px rgba(0,0,0,0.3)`;
         }).join(", "),
         borderRadius: "2px",
-
-        // fontSize: "1.5em",
-        // fontWeight: "bold",
-        // textAlign: "center",
-
         ...(sourceSquare === cell.square || targetSquare === cell.square
           ? {
-              // outline
-              // border: "inset 0 0 1px 2px rgb(255, 255, 0)",
               backgroundColor: "rgba(255, 255, 0, 0.4)",
             }
           : {}),
 
         ...(pieceSquare === cell.square
           ? {
-              // outline
-              // border: "inset 0 0 1px 4px rgb(0, 255, 0)",
-              backgroundColor: "rgba(0, 255, 0, 0.4)",
+              backgroundColor: "rgba(150, 150, 255, 0.9)",
             }
           : {}),
       };
@@ -357,20 +346,7 @@ const squareStyling = ({
     return acc;
   }, {});
 
-  return {
-    [pieceSquare]: { backgroundColor: "rgba(255, 255, 0, 0.4)" },
-    ...(history.length && {
-      [sourceSquare]: {
-        backgroundColor: "rgba(255, 255, 0, 0.4)",
-      },
-    }),
-    ...(history.length && {
-      [targetSquare]: {
-        backgroundColor: "rgba(255, 255, 0, 0.4)",
-      },
-    }),
-    ...highlightedSquareStyles,
-  };
+  return highlightedSquareStyles;
 };
 
 function invertArray<T>(arr: T[][]): T[][] {

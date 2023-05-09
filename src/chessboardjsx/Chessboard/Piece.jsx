@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import { DragSource } from 'react-dnd';
-import PropTypes from 'prop-types';
-import { getEmptyImage } from 'react-dnd-html5-backend';
+import React, { Component } from "react";
+import { DragSource } from "react-dnd";
+import PropTypes from "prop-types";
+import { getEmptyImage } from "react-dnd-html5-backend";
 
-import { ItemTypes } from './helpers';
+import { ItemTypes } from "./helpers";
 
 /* eslint react/prop-types: 0 */
 export const renderChessPiece = ({
@@ -21,14 +21,14 @@ export const renderChessPiece = ({
   onPieceClick,
   allowDrag,
   customDragLayerStyles = {},
-  phantomPieceStyles = {}
+  phantomPieceStyles = {},
 }) => {
   const renderChessPieceArgs = {
     squareWidth: width / 8,
     isDragging,
     droppedPiece: dropTarget && dropTarget.piece,
     targetSquare: dropTarget && dropTarget.target,
-    sourceSquare: dropTarget && dropTarget.source
+    sourceSquare: dropTarget && dropTarget.source,
   };
 
   return (
@@ -46,13 +46,13 @@ export const renderChessPiece = ({
           getSquareCoordinates,
           getTranslation,
           piece,
-          allowDrag
+          allowDrag,
         }),
         ...phantomPieceStyles,
-        ...customDragLayerStyles
+        ...customDragLayerStyles,
       }}
     >
-      {typeof pieces[piece] === 'function' ? (
+      {typeof pieces[piece] === "function" ? (
         pieces[piece](renderChessPieceArgs)
       ) : (
         <svg viewBox={`1 1 43 43`} width={width / 8} height={width / 8}>
@@ -83,7 +83,7 @@ class Piece extends Component {
     setTouchState: PropTypes.func,
     onPieceClick: PropTypes.func,
     wasSquareClicked: PropTypes.func,
-    allowDrag: PropTypes.func
+    allowDrag: PropTypes.func,
   };
 
   shouldComponentUpdate(nextProps) {
@@ -104,15 +104,15 @@ class Piece extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('touchstart', this.props.setTouchState);
+    window.addEventListener("touchstart", this.props.setTouchState);
 
     this.props.connectDragPreview(getEmptyImage(), {
-      captureDraggingState: true
+      captureDraggingState: true,
     });
   }
 
   componentWillUnmount() {
-    window.removeEventListener('touchstart', this.props.setTouchState);
+    window.removeEventListener("touchstart", this.props.setTouchState);
   }
 
   render() {
@@ -130,7 +130,7 @@ class Piece extends Component {
       sourceSquare,
       dropTarget,
       onPieceClick,
-      allowDrag
+      allowDrag,
     } = this.props;
 
     return connectDragSource(
@@ -147,7 +147,7 @@ class Piece extends Component {
         sourceSquare,
         dropTarget,
         onPieceClick,
-        allowDrag
+        allowDrag,
       })
     );
   }
@@ -164,7 +164,7 @@ const pieceSource = {
     return {
       piece: props.piece,
       source: props.square,
-      board: props.id
+      board: props.id,
     };
   },
   endDrag(props, monitor) {
@@ -175,13 +175,13 @@ const pieceSource = {
       square,
       onDrop,
       wasManuallyDropped,
-      wasSquareClicked
+      wasSquareClicked,
     } = props;
     const dropResults = monitor.getDropResult();
     const didDrop = monitor.didDrop();
 
     // trash piece when dropped off board
-    if (!didDrop && dropOffBoard === 'trash') {
+    if (!didDrop && dropOffBoard === "trash") {
       return setPosition({ sourceSquare: square, piece });
     }
 
@@ -192,7 +192,7 @@ const pieceSource = {
     if (board === dropBoard && didDrop) {
       if (onDrop.length) {
         wasManuallyDropped(true);
-        if (square !== 'spare') {
+        if (square !== "spare") {
           wasSquareClicked(false);
         }
 
@@ -200,17 +200,17 @@ const pieceSource = {
         return onDrop({
           sourceSquare: square,
           targetSquare: dropResults.target,
-          piece
+          piece,
         });
       }
       // set new position
       setPosition({
         sourceSquare: square,
         targetSquare: dropResults.target,
-        piece
+        piece,
       });
     }
-  }
+  },
 };
 
 function collect(connect, monitor) {
@@ -218,7 +218,7 @@ function collect(connect, monitor) {
     connectDragSource: connect.dragSource(),
     connectDragPreview: connect.dragPreview(),
     isDragging: monitor.isDragging(),
-    dropTarget: monitor.getDropResult()
+    dropTarget: monitor.getDropResult(),
   };
 }
 
@@ -230,13 +230,14 @@ const isActivePiece = (square, targetSquare) =>
 const getTransitionCoordinates = ({
   getSquareCoordinates,
   sourceSq,
-  targetSq
+  targetSq,
 }) => {
   const transitionCoordinates = getSquareCoordinates(sourceSq, targetSq);
   const { sourceSquare, targetSquare } = transitionCoordinates;
 
-  return `translate(${sourceSquare.x - targetSquare.x}px, ${sourceSquare.y -
-    targetSquare.y}px)`;
+  return `translate(${sourceSquare.x - targetSquare.x}px, ${
+    sourceSquare.y - targetSquare.y
+  }px)`;
 };
 
 const getTranslation = ({
@@ -244,7 +245,7 @@ const getTranslation = ({
   square,
   targetSquare,
   sourceSquare,
-  getSquareCoordinates
+  getSquareCoordinates,
 }) => {
   return (
     isActivePiece(square, targetSquare) &&
@@ -252,7 +253,7 @@ const getTranslation = ({
     getTransitionCoordinates({
       getSquareCoordinates,
       sourceSq: sourceSquare,
-      targetSq: targetSquare
+      targetSq: targetSquare,
     })
   );
 };
@@ -267,7 +268,7 @@ const pieceStyles = ({
   getSquareCoordinates,
   getTranslation,
   piece,
-  allowDrag
+  allowDrag,
 }) => ({
   opacity: isDragging ? 0 : 1,
   transform: getTranslation({
@@ -275,13 +276,13 @@ const pieceStyles = ({
     square,
     targetSquare,
     sourceSquare,
-    getSquareCoordinates
+    getSquareCoordinates,
   }),
   transition: `transform ${transitionDuration}ms`,
   zIndex: 5,
   cursor: isDragging
-    ? '-webkit-grabbing'
+    ? "-webkit-grabbing"
     : allowDrag({ piece, sourceSquare: square })
-      ? '-webkit-grab'
-      : 'not-allowed'
+    ? "-webkit-grab"
+    : "not-allowed",
 });
